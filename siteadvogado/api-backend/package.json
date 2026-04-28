@@ -1,0 +1,16 @@
+{
+  "name": "api-backend",
+  "version": "1.0.0",
+  "description": "Backend para envio de email",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "resend": "^6.12.2"
+  }
+}

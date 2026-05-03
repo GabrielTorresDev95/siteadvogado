@@ -99,7 +99,7 @@ export function ContactForm() {
     {
       icon: Clock,
       label: 'Horário',
-      value: 'Seg-Sex: 9h às 15h',
+      value: 'Seg Sex: 9h às 15h',
       link: null,
     },
   ];

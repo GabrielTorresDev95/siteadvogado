@@ -48,19 +48,12 @@ export function HeroSection() {
       onMouseLeave={handleMouseLeave}
       className="relative min-h-screen flex items-center pt-20 overflow-hidden"
     >
-      {/* BACKGROUND COM EFEITO DE VIDEO */}
+      {/* BACKGROUND SEM IMAGEM */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <motion.div
           style={{ transform: bgTransform }}
           className="absolute inset-0 will-change-transform"
-        >
-          <img
-            src="https://images.unsplash.com/photo-1758518731462-d091b0b4ed0d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYXd5ZXIlMjBwcm9mZXNzaW9uYWwlMjBvZmZpY2V8ZW58MXx8fHwxNzc1NTY1NzE2fDA&ixlib=rb-4.1.0&q=80&w=1600"
-            alt="Escritório jurídico profissional"
-            className="w-full h-full object-cover select-none pointer-events-none"
-            draggable={false}
-          />
-        </motion.div>
+        />
 
         <div
           className="absolute inset-0"
@@ -113,7 +106,9 @@ export function HeroSection() {
               }}
             >
               <Shield className="w-4 h-4" />
-              <span className="text-sm font-semibold">Atuação em Propriedade Intelectual</span>
+              <span className="text-sm font-semibold">
+                Atuação em Propriedade Intelectual
+              </span>
             </motion.div>
 
             <motion.h1
@@ -124,7 +119,9 @@ export function HeroSection() {
               style={{ color: colors.background }}
             >
               Proteção, estruturação e defesa de{' '}
-              <span style={{ color: colors.secondary }}>ativos intelectuais</span>
+              <span style={{ color: colors.secondary }}>
+                ativos intelectuais
+              </span>
             </motion.h1>
 
             <motion.p
@@ -134,8 +131,8 @@ export function HeroSection() {
               className="text-lg md:text-xl mb-8 leading-relaxed opacity-90"
               style={{ color: colors.background }}
             >
-              Atuação técnica e estratégica em marcas, direitos autorais, contratos,
-              inovação e proteção jurídica de ativos intangíveis.
+              Atuação técnica e estratégica em marcas, direitos autorais,
+              contratos, inovação e proteção jurídica de ativos intangíveis.
             </motion.p>
 
             <motion.button
@@ -160,10 +157,16 @@ export function HeroSection() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12">
               {['Marcas', 'Direitos Autorais', 'Contratos'].map((item, index) => (
                 <div key={index}>
-                  <div className="text-xl font-bold" style={{ color: colors.secondary }}>
+                  <div
+                    className="text-xl font-bold"
+                    style={{ color: colors.secondary }}
+                  >
                     {item}
                   </div>
-                  <div className="text-sm opacity-80" style={{ color: colors.background }}>
+                  <div
+                    className="text-sm opacity-80"
+                    style={{ color: colors.background }}
+                  >
                     Atuação estratégica
                   </div>
                 </div>
@@ -194,8 +197,14 @@ export function HeroSection() {
                   boxShadow: '0 20px 40px rgba(0,0,0,0.12)',
                 }}
               >
-                <item.icon className="w-10 h-10 mb-4" style={{ color: colors.secondary }} />
-                <h3 className="text-lg font-semibold" style={{ color: colors.background }}>
+                <item.icon
+                  className="w-10 h-10 mb-4"
+                  style={{ color: colors.secondary }}
+                />
+                <h3
+                  className="text-lg font-semibold"
+                  style={{ color: colors.background }}
+                >
                   {item.label}
                 </h3>
               </motion.div>

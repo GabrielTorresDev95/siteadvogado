@@ -11,7 +11,13 @@ const port = process.env.PORT || 3001;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 app.use(cors({
-  origin: '*',
+  origin: [
+    'http://localhost:5173',
+    'https://barukregistra.com.br',
+    'https://www.barukregistra.com.br'
+  ],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
 }));
 
 app.use(express.json());
@@ -36,7 +42,7 @@ app.post('/contact', async (req, res) => {
     const result = await resend.emails.send({
       from: 'Baruk Registro <contato@barukregistra.com.br>',
       to: process.env.CONTACT_TO_EMAIL,
-      reply_to: email,
+      replyTo: email,
       subject: `Nova consulta pelo site - ${service}`,
       html: `
         <div>
@@ -56,7 +62,7 @@ app.post('/contact', async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error('Erro ao enviar email:', error);
 
     return res.status(500).json({
       error: 'Erro interno ao enviar email.',

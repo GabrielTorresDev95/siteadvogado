@@ -35,7 +35,7 @@ export function ContactForm() {
     setStatusType('');
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('https://baruk-api-ebon.vercel.app/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

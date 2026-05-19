@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     }
 
     await resend.emails.send({
-      from: 'Baruk Registro <onboarding@resend.dev>', // padrão gratuito
+      from: 'Baruk Registro <contato@barukregistra.com.br>', // padrão gratuito
       to: process.env.CONTACT_TO_EMAIL,
       reply_to: email,
       subject: `Nova consulta pelo site - ${service}`,

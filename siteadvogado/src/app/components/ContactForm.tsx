@@ -35,7 +35,7 @@ export function ContactForm() {
     setStatusType('');
 
     try {
-      const response = await fetch('/api-backend/contact', {
+      const response = await fetch('/contato.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

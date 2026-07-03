@@ -61,28 +61,46 @@ export function BlogSection() {
     return cleanUrl
   }
 
-  function getArticleText(article: BlogPost) {
-    if (typeof article.excerpt === 'string' && article.excerpt.trim()) {
-      return article.excerpt
-    }
+function extractTextFromBlock(block: any): string {
+  if (!block) return ''
 
-    if (typeof article.content === 'string' && article.content.trim()) {
-      return article.content
-    }
-
-    if (Array.isArray(article.content)) {
-      const text = article.content
-        .map((block: any) =>
-          block.children?.map((child: any) => child.text || '').join('')
-        )
-        .join('\n\n')
-        .trim()
-
-      if (text) return text
-    }
-
-    return 'Conteúdo completo ainda não disponível.'
+  if (typeof block.text === 'string') {
+    return block.text
   }
+
+  if (Array.isArray(block.children)) {
+    return block.children
+      .map((child: any) => extractTextFromBlock(child))
+      .filter(Boolean)
+      .join(' ')
+  }
+
+  return ''
+}
+
+function getArticleText(article: BlogPost) {
+  if (typeof article.excerpt === 'string' && article.excerpt.trim()) {
+    return article.excerpt.trim()
+  }
+
+  if (typeof article.content === 'string' && article.content.trim()) {
+    return article.content.trim()
+  }
+
+  if (Array.isArray(article.content)) {
+    const text = article.content
+      .map((block: any) => extractTextFromBlock(block))
+      .filter(Boolean)
+      .join(' ')
+      .trim()
+
+    if (text) {
+      return text
+    }
+  }
+
+  return 'Conteúdo completo ainda não disponível.'
+}
 
   return (
     <section

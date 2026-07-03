@@ -4,29 +4,8 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Calendar, ArrowRight, FileText, X } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 import { useEffect, useState } from 'react'
-import { sanityClient } from '../../lib/sanity'
-
-type SanityBlock = {
-  _type: string
-  children?: {
-    text: string
-  }[]
-  title?: string
-  url?: string
-}
-
-type BlogPost = {
-  _id: string
-  title: string
-  excerpt?: string
-  publishedAt?: string
-  readTime?: string
-  category?: string
-  slug?: {
-    current: string
-  }
-  content?: SanityBlock[]
-}
+import { getBlogPosts, type BlogPost } from '../services/strapi'
+import { BlocksRenderer } from '@strapi/blocks-react-renderer'
 
 export function BlogSection() {
   const { colors } = useTheme()
@@ -37,24 +16,11 @@ export function BlogSection() {
   useEffect(() => {
     async function loadArticles() {
       try {
-        const data = await sanityClient.fetch(`
-          *[_type == "blogPost"]
-          | order(publishedAt desc){
-            _id,
-            title,
-            excerpt,
-            publishedAt,
-            readTime,
-            category,
-            slug,
-            content
-          }
-        `)
-
-        console.log('POSTS SANITY:', data)
+        const data = await getBlogPosts()
+        console.log('POSTS STRAPI:', data)
         setArticles(data)
       } catch (error) {
-        console.error('Erro ao buscar posts do Sanity:', error)
+        console.error('Erro ao buscar posts do Strapi:', error)
       } finally {
         setLoading(false)
       }
@@ -73,78 +39,57 @@ export function BlogSection() {
     })
   }
 
-  function getFirstVideo(article: BlogPost) {
-    return article.content?.find((item) => item._type === 'video' && item.url)
-  }
-
-  function getVideoEmbedUrl(url?: string) {
+  function getVideoEmbedUrl(url?: string | null) {
     if (!url) return ''
 
-    if (url.includes('youtube.com/watch?v=')) {
-      const videoId = url.split('v=')[1]?.split('&')[0]
+    const cleanUrl = url.trim()
+
+    if (cleanUrl.includes('youtube.com/watch?v=')) {
+      const videoId = cleanUrl.split('v=')[1]?.split('&')[0]
       return `https://www.youtube.com/embed/${videoId}`
     }
 
-    if (url.includes('youtu.be/')) {
-      const videoId = url.split('youtu.be/')[1]?.split('?')[0]
+    if (cleanUrl.includes('youtu.be/')) {
+      const videoId = cleanUrl.split('youtu.be/')[1]?.split('?')[0]
       return `https://www.youtube.com/embed/${videoId}`
     }
 
-    return url
+    if (cleanUrl.includes('youtube.com/embed/')) {
+      return cleanUrl
+    }
+
+    return cleanUrl
   }
 
-  function renderContent(content?: SanityBlock[]) {
-    if (!content || content.length === 0) {
-      return (
-        <p style={{ color: colors.textLight }}>
-          Conteúdo completo ainda não disponível.
-        </p>
-      )
+  function getArticleText(article: BlogPost) {
+    if (typeof article.excerpt === 'string' && article.excerpt.trim()) {
+      return article.excerpt
     }
 
-    return content.map((block, index) => {
-      if (block._type === 'video') {
-        return (
-          <div key={index} className="my-6">
-            {block.title && (
-              <h4
-                className="text-xl font-bold mb-3"
-                style={{ color: colors.primary }}
-              >
-                {block.title}
-              </h4>
-            )}
+    if (typeof article.content === 'string' && article.content.trim()) {
+      return article.content
+    }
 
-            <iframe
-              src={getVideoEmbedUrl(block.url)}
-              className="w-full aspect-video rounded-2xl"
-              allowFullScreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            />
-          </div>
+    if (Array.isArray(article.content)) {
+      const text = article.content
+        .map((block: any) =>
+          block.children?.map((child: any) => child.text || '').join('')
         )
-      }
+        .join('\n\n')
+        .trim()
 
-      if (block._type === 'block') {
-        const text = block.children?.map((child) => child.text).join('')
+      if (text) return text
+    }
 
-        return (
-          <p
-            key={index}
-            className="mb-4 leading-relaxed"
-            style={{ color: colors.textLight }}
-          >
-            {text}
-          </p>
-        )
-      }
-
-      return null
-    })
+    return 'Conteúdo completo ainda não disponível.'
   }
 
   return (
-    <section id="conteudos" className="py-20" style={{ backgroundColor: colors.background }}>
+    <section
+      id="conteudos"
+      className="py-20"
+      style={{ backgroundColor: colors.background }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -157,17 +102,28 @@ export function BlogSection() {
             style={{ backgroundColor: `${colors.secondary}20` }}
           >
             <FileText className="w-4 h-4" style={{ color: colors.secondary }} />
-            <span className="text-sm font-semibold" style={{ color: colors.secondary }}>
+
+            <span
+              className="text-sm font-semibold"
+              style={{ color: colors.secondary }}
+            >
               Blog Jurídico
             </span>
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: colors.primary }}>
+          <h2
+            className="text-4xl md:text-5xl font-bold mb-4"
+            style={{ color: colors.primary }}
+          >
             Conteúdos Educativos
           </h2>
 
-          <p className="text-lg max-w-2xl mx-auto" style={{ color: colors.textLight }}>
-            Artigos especializados sobre propriedade intelectual, direitos autorais e proteção de marcas
+          <p
+            className="text-lg max-w-2xl mx-auto"
+            style={{ color: colors.textLight }}
+          >
+            Artigos especializados sobre propriedade intelectual, direitos
+            autorais e proteção de marcas
           </p>
         </motion.div>
 
@@ -181,82 +137,88 @@ export function BlogSection() {
           </p>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {articles.map((article, index) => {
-              const video = getFirstVideo(article)
+            {articles.map((article, index) => (
+              <motion.article
+                key={article.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+                className="group rounded-xl overflow-hidden shadow-lg transition-all"
+                style={{
+                  backgroundColor: colors.background,
+                  border: `1px solid ${colors.secondary}20`,
+                }}
+              >
+                {article.videoUrl ? (
+                  <div className="w-full aspect-video bg-black">
+                    <iframe
+                      src={getVideoEmbedUrl(article.videoUrl)}
+                      className="w-full h-full"
+                      title={article.title}
+                      allowFullScreen
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    />
+                  </div>
+                ) : article.cover?.url ? (
+                  <img
+                    src={article.cover.url}
+                    alt={article.title}
+                    className="w-full aspect-video object-cover"
+                  />
+                ) : null}
 
-              return (
-                <motion.article
-                  key={article._id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                  className="group rounded-xl overflow-hidden shadow-lg transition-all"
-                  style={{
-                    backgroundColor: colors.background,
-                    border: `1px solid ${colors.secondary}20`,
-                  }}
-                >
-                  {video?.url && (
-                    <div className="w-full aspect-video bg-black">
-                      <iframe
-                        src={getVideoEmbedUrl(video.url)}
-                        className="w-full h-full"
-                        allowFullScreen
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      />
+                <div className="p-6 pb-0">
+                  <span
+                    className="inline-block px-3 py-1 rounded-full text-xs font-semibold"
+                    style={{
+                      backgroundColor: `${colors.secondary}20`,
+                      color: colors.secondary,
+                    }}
+                  >
+                    {article.category || 'Conteúdo'}
+                  </span>
+                </div>
+
+                <div className="p-6">
+                  <h3
+                    className="text-xl font-bold mb-3 group-hover:opacity-80 transition-opacity"
+                    style={{ color: colors.primary }}
+                  >
+                    {article.title}
+                  </h3>
+
+                  <p
+                    className="mb-4 line-clamp-3"
+                    style={{ color: colors.textLight }}
+                  >
+                    {getArticleText(article)}
+                  </p>
+
+                  <div
+                    className="flex items-center justify-between text-sm"
+                    style={{ color: colors.textLight }}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-4 h-4" />
+                      <span>{formatDate(article.publishedAt)}</span>
                     </div>
-                  )}
 
-                  <div className="p-6 pb-0">
-                    <span
-                      className="inline-block px-3 py-1 rounded-full text-xs font-semibold"
-                      style={{
-                        backgroundColor: `${colors.secondary}20`,
-                        color: colors.secondary,
-                      }}
-                    >
-                      {article.category || 'Conteúdo'}
-                    </span>
+                    <span>{article.readTime || 'Leitura rápida'}</span>
                   </div>
 
-                  <div className="p-6">
-                    <h3
-                      className="text-xl font-bold mb-3 group-hover:opacity-80 transition-opacity"
-                      style={{ color: colors.primary }}
-                    >
-                      {article.title}
-                    </h3>
-
-                    <p className="mb-4 line-clamp-3" style={{ color: colors.textLight }}>
-                      {article.excerpt || 'Sem resumo disponível.'}
-                    </p>
-
-                    <div
-                      className="flex items-center justify-between text-sm"
-                      style={{ color: colors.textLight }}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>{formatDate(article.publishedAt)}</span>
-                      </div>
-
-                      <span>{article.readTime || 'Leitura rápida'}</span>
-                    </div>
-
-                    <button
-                      onClick={() => setSelectedArticle(article)}
-                      className="mt-4 flex items-center space-x-2 font-semibold transition-all group-hover:translate-x-2"
-                      style={{ color: colors.secondary }}
-                    >
-                      <span>Ler artigo</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </motion.article>
-              )
-            })}
+                  <button
+                    onClick={() => setSelectedArticle(article)}
+                    className="mt-4 flex items-center space-x-2 font-semibold transition-all group-hover:translate-x-2"
+                    style={{ color: colors.secondary }}
+                  >
+                    <span>Ler artigo</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.article>
+            ))}
           </div>
         )}
       </div>
@@ -297,7 +259,10 @@ export function BlogSection() {
                     {selectedArticle.title}
                   </h2>
 
-                  <p className="mt-3 text-sm" style={{ color: colors.textLight }}>
+                  <p
+                    className="mt-3 text-sm"
+                    style={{ color: colors.textLight }}
+                  >
                     {formatDate(selectedArticle.publishedAt)}
                   </p>
                 </div>
@@ -314,16 +279,152 @@ export function BlogSection() {
                 </button>
               </div>
 
-              {selectedArticle.excerpt && (
-                <p
-                  className="text-lg mb-6 leading-relaxed"
-                  style={{ color: colors.textLight }}
-                >
-                  {selectedArticle.excerpt}
-                </p>
-              )}
+              {selectedArticle.videoUrl ? (
+                <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden mb-6">
+                  <iframe
+                    src={getVideoEmbedUrl(selectedArticle.videoUrl)}
+                    className="w-full h-full"
+                    title={selectedArticle.title}
+                    allowFullScreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  />
+                </div>
+              ) : selectedArticle.cover?.url ? (
+                <img
+                  src={selectedArticle.cover.url}
+                  alt={selectedArticle.title}
+                  className="w-full rounded-2xl mb-6"
+                />
+              ) : null}
 
-              <div>{renderContent(selectedArticle.content)}</div>
+              <div
+                className="
+                  text-lg leading-relaxed
+                  [&_p]:mb-4
+                  [&_strong]:font-bold
+                  [&_em]:italic
+                  [&_a]:underline
+                "
+                style={{ color: colors.textLight }}
+              >
+                {Array.isArray(selectedArticle.content) ? (
+                  <BlocksRenderer
+                    content={selectedArticle.content as any}
+                    blocks={{
+                      paragraph: ({ children }) => (
+                        <p className="mb-4">{children}</p>
+                      ),
+
+                      heading: ({ children, level }) => {
+                        if (level === 1) {
+                          return (
+                            <h1 className="text-4xl font-bold mb-5 mt-6">
+                              {children}
+                            </h1>
+                          )
+                        }
+
+                        if (level === 2) {
+                          return (
+                            <h2 className="text-3xl font-bold mb-4 mt-6">
+                              {children}
+                            </h2>
+                          )
+                        }
+
+                        if (level === 3) {
+                          return (
+                            <h3 className="text-2xl font-bold mb-4 mt-6">
+                              {children}
+                            </h3>
+                          )
+                        }
+
+                        if (level === 4) {
+                          return (
+                            <h4 className="text-xl font-bold mb-3 mt-5">
+                              {children}
+                            </h4>
+                          )
+                        }
+
+                        if (level === 5) {
+                          return (
+                            <h5 className="text-lg font-bold mb-3 mt-5">
+                              {children}
+                            </h5>
+                          )
+                        }
+
+                        return (
+                          <h6 className="text-base font-bold mb-3 mt-5">
+                            {children}
+                          </h6>
+                        )
+                      },
+
+                      list: ({ children, format }) => {
+                        if (format === 'ordered') {
+                          return (
+                            <ol
+                              className="list-decimal pl-8 mb-6 space-y-2"
+                              style={{ listStyleType: 'decimal' }}
+                            >
+                              {children}
+                            </ol>
+                          )
+                        }
+
+                        return (
+                          <ul
+                            className="list-disc pl-8 mb-6 space-y-2"
+                            style={{ listStyleType: 'disc' }}
+                          >
+                            {children}
+                          </ul>
+                        )
+                      },
+
+                      'list-item': ({ children }) => (
+                        <li
+                          className="pl-1"
+                          style={{ display: 'list-item' }}
+                        >
+                          {children}
+                        </li>
+                      ),
+
+                      quote: ({ children }) => (
+                        <blockquote
+                          className="border-l-4 pl-4 my-6 italic"
+                          style={{ borderColor: colors.secondary }}
+                        >
+                          {children}
+                        </blockquote>
+                      ),
+                    }}
+                    modifiers={{
+                      bold: ({ children }) => (
+                        <strong className="font-bold">{children}</strong>
+                      ),
+
+                      italic: ({ children }) => (
+                        <em className="italic">{children}</em>
+                      ),
+
+                      underline: ({ children }) => (
+                        <span className="underline">{children}</span>
+                      ),
+
+                      strikethrough: ({ children }) => (
+                        <span className="line-through">{children}</span>
+                      ),
+                    }}
+                  />
+                ) : (
+                  <p>{getArticleText(selectedArticle)}</p>
+                )}
+              </div>
             </motion.div>
           </motion.div>
         )}

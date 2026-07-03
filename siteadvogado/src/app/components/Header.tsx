@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Menu, X, Phone, Scale } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
+import  logo  from '../assets/barukregistra.jpg';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -57,7 +58,11 @@ export function Header() {
               <div className="absolute inset-0 bg-white/10" />
               <div className="absolute -left-10 top-0 h-full w-8 bg-white/25 skew-x-12 group-hover:left-[140%] transition-all duration-700" />
               <div className="absolute inset-[1px] rounded-2xl border border-white/10" />
-              <Scale className="relative w-6 h-6 text-white" />
+              <img
+  src={logo}
+  alt="Baruk Registra"
+  className="relative w-10 h-10 object-contain"
+/>
             </motion.div>
 
             <div className="flex flex-col leading-none">

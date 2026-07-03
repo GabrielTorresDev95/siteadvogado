@@ -14,14 +14,16 @@ interface ThemeColors {
 
 // 🔵 PALETA FIXA AZUL + BRANCO
 const palettes: Record<ThemePalette, ThemeColors> = {
-  confianca: {
-    primary: '#1E3A8A',     // azul escuro
-    secondary: '#2563EB',   // azul padrão
-    accent: '#3B82F6',      // azul claro
-    background: '#FFFFFF',  // branco
-    text: '#0F172A',        // quase preto
-    textLight: '#64748B',   // cinza suave
-  },
+confianca: {
+  primary: '#0d4b82',
+  secondary: '#1b3d57',
+  accent: '#446c94',
+
+  background: '#ffffff',
+
+  text: '#1b3d57',
+  textLight: '#60798a',
+},
 };
 
 interface ThemeContextType {

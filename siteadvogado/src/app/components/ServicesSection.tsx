@@ -9,22 +9,22 @@ export function ServicesSection() {
     {
       icon: Shield,
       title: 'Propriedade Industrial',
-      items: ['Registro de marca', 'Monitoramento', 'Defesa no INPI e judicial'],
+      items: ['Registro de marca', 'Registro de Software', 'Desenho Industrial', 'Registro Patente', 'Monitoramento', 'Defesa do INPI e Judicial'],
     },
     {
       icon: Copyright,
       title: 'Direitos Autorais',
-      items: ['Registro', 'Prova de anterioridade', 'Defesa judicial'],
+      items: ['Registro', 'Prova de anterioridade', 'Contrato e Negociação', 'Defesa judicial'],
     },
     {
       icon: FileText,
       title: 'Contratos e Negociação',
-      items: ['Contratos', 'Licenciamento', 'Cessão'],
+      items: [ 'Licenciamento', 'Cessão', 'Proteção Juridica'],
     },
     {
       icon: Globe,
       title: 'Direito Digital',
-      items: ['Takedown / contrafação', 'Proteção online', 'Proteção jurídica'],
+      items: ['Proteção de Dados e Privacidade', 'Direito Eletronico e Digital', 'Takedown / Pirataria(contrafação)', 'Proteção online(ou no digital)'],
     },
   ];
 
@@ -53,8 +53,7 @@ export function ServicesSection() {
           </h2>
 
           <p className="text-lg" style={{ color: colors.text }}>
-            Serviços conduzidos com abordagem técnica, estratégica e compatível com as
-            particularidades de cada projeto, negócio ou criação.
+          Desde 2024, a Baruk Registra atua de forma especializada na proteção e defesa de ativos intelectuais, reunindo experiência, expertise e tradição em Propriedade Intelectual, Direitos Autorais, contratos e contencioso, com atuação estratégica em todo o território nacional pautada em segurança, sigilo e profissionalismo.
           </p>
         </motion.div>
 

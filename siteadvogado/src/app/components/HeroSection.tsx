@@ -145,7 +145,7 @@ export function HeroSection() {
               className="group relative overflow-hidden px-8 py-4 rounded-xl text-lg font-semibold flex items-center gap-3 shadow-2xl"
               style={{
                 backgroundColor: colors.secondary,
-                color: colors.primary,
+                color: colors.textLight,
               }}
             >
               <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition bg-white/20" />
@@ -159,7 +159,7 @@ export function HeroSection() {
                 <div key={index}>
                   <div
                     className="text-xl font-bold"
-                    style={{ color: colors.secondary }}
+                    style={{ color: colors.primary }}
                   >
                     {item}
                   </div>

@@ -8,6 +8,7 @@ import { TestimonialsSection } from './components/TestimonialsSection'
 import { ContactForm } from './components/ContactForm';
 import { CTASection } from './components/CTASection';
 import { Footer } from './components/Footer';
+import { NewsletterSection } from './components/NewsletterSection';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <TestimonialsSection />
           <CTASection />
           <ContactForm />
+          <NewsletterSection />
         </main>
         <Footer />
       </div>

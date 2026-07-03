@@ -18,40 +18,49 @@ export function DiferenciaisSection() {
               className="inline-block text-sm font-semibold uppercase tracking-widest mb-4"
               style={{ color: colors.secondary }}
             >
-             <h1> BARUK REGISTRA </h1>
+              BARUK REGISTRA
             </span>
 
             <h2
               className="text-3xl md:text-4xl font-bold mb-6 leading-tight"
               style={{ color: colors.primary }}
             >
-              Atuação técnica voltada à proteção e valorização de ativos intelectuais
+              Seu negócio é único. Registre-o.
             </h2>
 
-            <div className="space-y-5 text-lg leading-relaxed" style={{ color: colors.text }}>
+            <div
+              className="space-y-5 text-lg leading-relaxed"
+              style={{ color: colors.text }}
+            >
               <p>
-                A Baruk Registra é uma iniciativa dedicada à proteção, estruturação e defesa
-                de ativos intelectuais, com atuação estratégica nas áreas de marcas,
-                patentes, softwares, inovação, direitos autorais, contratos e contencioso.
+                A Baruk Registra atua na proteção, estruturação e defesa de
+                ativos intelectuais, oferecendo soluções estratégicas em
+                marcas, patentes, softwares, inovação, direitos autorais,
+                contratos e contencioso.
               </p>
 
               <p>
-                No cenário atual, ativos intangíveis — como marcas, criações, tecnologias
-                e conteúdos — representam valor real e exigem organização jurídica adequada,
-                acompanhamento técnico e proteção contínua.
+                Com atuação especializada, experiência prática e abordagem
+                personalizada, desenvolve serviços voltados à segurança
+                jurídica de negócios, projetos, criações e tecnologias,
+                acompanhando desde a análise de viabilidade e registros
+                perante órgãos e entidades competentes até a condução de
+                medidas administrativas e judiciais relacionadas à proteção
+                de direitos.
               </p>
 
               <p>
-                A atuação envolve desde a análise de viabilidade e estruturação de pedidos
-                perante o INPI e a Biblioteca Nacional, até o acompanhamento de processos
-                administrativos, monitoramento de ativos, elaboração de instrumentos
-                contratuais e medidas de defesa administrativa e judicial.
+                A atuação é realizada de forma remota em todo o território
+                nacional, utilizando tecnologia adequada para acompanhamento
+                e gestão dos processos de cada cliente, com segurança,
+                sigilo, organização e profissionalismo.
               </p>
 
               <p>
-                Com atendimento remoto em todo o território nacional, a proposta é oferecer
-                atuação técnica, estratégica e consistente, alinhada às particularidades de
-                cada cliente e às exigências do mercado.
+                Mais do que viabilizar registros, a Baruk Registra busca
+                oferecer uma atuação estratégica, sólida e alinhada às
+                necessidades reais de cada cliente e às dinâmicas do mercado
+                contemporâneo.
               </p>
             </div>
           </motion.div>
@@ -66,10 +75,10 @@ export function DiferenciaisSection() {
           >
             <div className="space-y-6">
               {[
-                'Proteção de marcas, conteúdos e tecnologias',
-                'Estruturação jurídica de ativos intelectuais',
-                'Acompanhamento técnico e estratégico',
-                'Atuação administrativa e judicial, conforme o caso',
+                'Marcas e Patentes',
+                'Softwares e Inovação',
+                'Direitos Autorais',
+                'Contratos e Contencioso',
               ].map((item, index) => (
                 <div
                   key={index}
@@ -79,7 +88,10 @@ export function DiferenciaisSection() {
                     backgroundColor: `${colors.background}80`,
                   }}
                 >
-                  <p className="font-medium" style={{ color: colors.primary }}>
+                  <p
+                    className="font-medium"
+                    style={{ color: colors.primary }}
+                  >
                     {item}
                   </p>
                 </div>
@@ -91,3 +103,4 @@ export function DiferenciaisSection() {
     </section>
   );
 }
+

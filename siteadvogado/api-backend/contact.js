@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   try {
     await resend.emails.send({
-      from: 'Baruk Registro <contato@barukregistra.com.br>',', // após verificar domínio
+      from: 'Baruk Registro <contato@barukregistra.com.br>', // após verificar domínio'
       to: 'torres.almeida95@gmail.com',
       reply_to: email,
       subject: `Nova consulta pelo site - ${service}`,

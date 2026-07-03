@@ -1,17 +1,17 @@
 const STRAPI_URL =
-  import.meta.env.VITE_STRAPI_URL || 'http://localhost:1337'
+  import.meta.env.VITE_STRAPI_URL ||
+  'https://dependable-dance-cf7ce840cf.strapiapp.com'
 
 export type StrapiBlock = {
   type: string
+  text?: string
   format?: 'ordered' | 'unordered'
   level?: number
   children?: StrapiBlock[]
-  text?: string
   bold?: boolean
   italic?: boolean
   underline?: boolean
   strikethrough?: boolean
-  url?: string
 }
 
 export type BlogPost = {
@@ -20,7 +20,7 @@ export type BlogPost = {
   title: string
   slug: string
   excerpt?: string | null
-  content?: StrapiBlock[] | string | null
+  content?: StrapiBlock[] | null
   category?: string | null
   readTime?: string | null
   videoUrl?: string | null
@@ -30,75 +30,103 @@ export type BlogPost = {
   } | null
 }
 
-function getCoverUrl(cover: any): string | undefined {
+function getMediaUrl(cover: any): string | undefined {
   if (!cover) return undefined
 
-  // Quando o campo de mídia aceita vários arquivos
-  const media = Array.isArray(cover)
-    ? cover[0]
-    : Array.isArray(cover.data)
+  let media = cover
+
+  if (Array.isArray(cover)) {
+    media = cover[0]
+  }
+
+  if (cover.data) {
+    media = Array.isArray(cover.data)
       ? cover.data[0]
-      : cover.data || cover
+      : cover.data
+  }
 
   const attributes = media?.attributes || media
   const url = attributes?.url
 
   if (!url) return undefined
 
-  return url.startsWith('http') ? url : `${STRAPI_URL}${url}`
+  if (url.startsWith('http')) {
+    return url
+  }
+
+  return `${STRAPI_URL}${url}`
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  const url =
+  const apiUrl =
     `${STRAPI_URL}/api/blog-spots` +
-    `?populate=*` +
-    `&sort=publishedAt:desc`
+    '?populate=*' +
+    '&sort=publishedAt:desc'
 
-  const response = await fetch(url)
+  console.log('URL STRAPI:', apiUrl)
+
+  const response = await fetch(apiUrl)
 
   if (!response.ok) {
-    const errorText = await response.text()
+    const errorBody = await response.text()
 
     console.error('Erro da API do Strapi:', {
       status: response.status,
-      url,
-      resposta: errorText,
+      body: errorBody,
     })
 
     throw new Error(
-      `Erro ao buscar artigos do Strapi: ${response.status}`
+      `Erro ao buscar artigos: ${response.status}`
     )
   }
 
   const json = await response.json()
 
+  console.log('RESPOSTA ORIGINAL DO STRAPI:', json)
+
   if (!Array.isArray(json.data)) {
-    console.error('Formato inesperado recebido do Strapi:', json)
+    console.error('json.data não é uma lista:', json)
     return []
   }
 
   return json.data.map((item: any) => {
-    // Compatível com Strapi 4 e Strapi 5
-    const post = item.attributes || item
+    /*
+      Strapi 5:
+      os campos normalmente ficam diretamente em item.
+
+      Strapi 4:
+      os campos normalmente ficam em item.attributes.
+    */
+    const attributes = item.attributes || item
+
+    const content = attributes.content ?? item.content ?? null
+
+    console.log('POST MAPEADO:', {
+      title: attributes.title,
+      content,
+      contentIsArray: Array.isArray(content),
+    })
 
     return {
       id: item.id,
       documentId: item.documentId,
-      title: post.title || 'Artigo sem título',
-      slug: post.slug || '',
-      excerpt: post.excerpt ?? null,
 
-      // Este campo estava faltando
-      content: post.content ?? null,
+      title: attributes.title || 'Artigo sem título',
+      slug: attributes.slug || '',
 
-      category: post.category ?? null,
-      readTime: post.readTime ?? null,
-      videoUrl: post.videoUrl ?? null,
-      publishedAt: post.publishedAt,
+      excerpt: attributes.excerpt ?? null,
 
-      cover: getCoverUrl(post.cover)
+      // Campo indispensável para listas e parágrafos
+      content,
+
+      category: attributes.category ?? null,
+      readTime: attributes.readTime ?? null,
+      videoUrl: attributes.videoUrl ?? null,
+      publishedAt: attributes.publishedAt,
+
+      cover: getMediaUrl(attributes.cover)
         ? {
-            url: getCoverUrl(post.cover),
+            url: getMediaUrl(attributes.cover),
           }
         : null,
     }

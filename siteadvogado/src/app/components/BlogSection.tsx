@@ -68,6 +68,15 @@ function extractTextFromBlock(block: any): string {
     return block.text
   }
 
+  if (block.type === 'list') {
+    return (
+      block.children
+        ?.map((item: any) => extractTextFromBlock(item))
+        .filter(Boolean)
+        .join(', ') || ''
+    )
+  }
+
   if (Array.isArray(block.children)) {
     return block.children
       .map((child: any) => extractTextFromBlock(child))
@@ -94,9 +103,7 @@ function getArticleText(article: BlogPost) {
       .join(' ')
       .trim()
 
-    if (text) {
-      return text
-    }
+    if (text) return text
   }
 
   return 'Conteúdo completo ainda não disponível.'

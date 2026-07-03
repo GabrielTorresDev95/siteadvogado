@@ -105,7 +105,7 @@ export function Footer() {
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5" style={{ color: colors.secondary }} />
                 <a
-                  href="mailto:contato@direitoautoral.adv.br"
+                  href="mailto:torres.almeida95@gmail.com"
                   className="hover:opacity-80 transition-opacity"
                   style={{ color: colors.background }}
                 >

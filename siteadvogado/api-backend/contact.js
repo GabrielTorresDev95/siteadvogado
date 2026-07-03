@@ -18,8 +18,8 @@ export default async function handler(req, res) {
 
   try {
     await resend.emails.send({
-      from: 'Baruk Registra <contato@barukregistra.com.br>', // após verificar domínio
-      to: 'contato@barukregistra.com.br',
+      from: 'Baruk Registro <contato@barukregistra.com.br>',', // após verificar domínio
+      to: 'torres.almeida95@gmail.com',
       reply_to: email,
       subject: `Nova consulta pelo site - ${service}`,
       html: `<p><b>Nome:</b> ${name}</p><p><b>Email:</b> ${email}</p><p><b>WhatsApp:</b> ${whatsapp}</p><p><b>Serviço:</b> ${service}</p><p><b>Mensagem:</b> ${message || 'Não informado'}</p>`,

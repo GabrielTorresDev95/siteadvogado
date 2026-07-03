@@ -88,7 +88,7 @@ export function ContactForm() {
       icon: Mail,
       label: 'Email',
       value: 'contato@barukregistra.com.br',
-      link: 'mailto:contato@barukregistra.com.br',
+      link: 'mailto:torres.almeida95@gmail.com',
     },
     {
       icon: MapPin,

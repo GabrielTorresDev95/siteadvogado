@@ -61,52 +61,53 @@ export function BlogSection() {
     return cleanUrl
   }
 
-function extractTextFromBlock(node: any): string {
-  if (!node) return ''
+  function extractTextFromBlock(node: any): string {
+    if (!node) return ''
 
-  if (typeof node.text === 'string') {
-    return node.text
-  }
+    if (typeof node.text === 'string') {
+      return node.text
+    }
 
-  if (!Array.isArray(node.children)) {
-    return ''
-  }
+    if (!Array.isArray(node.children)) {
+      return ''
+    }
 
-  if (node.type === 'list') {
+    if (node.type === 'list') {
+      return node.children
+        .map((item: any) => extractTextFromBlock(item))
+        .filter(Boolean)
+        .join(' • ')
+    }
+
     return node.children
-      .map((item: any) => extractTextFromBlock(item))
-      .filter(Boolean)
-      .join(' • ')
-  }
-
-  return node.children
-    .map((child: any) => extractTextFromBlock(child))
-    .filter(Boolean)
-    .join(' ')
-}
-
-function getArticleText(article: BlogPost): string {
-  if (
-    typeof article.excerpt === 'string' &&
-    article.excerpt.trim().length > 0
-  ) {
-    return article.excerpt.trim()
-  }
-
-  if (Array.isArray(article.content)) {
-    const text = article.content
-      .map((block: any) => extractTextFromBlock(block))
+      .map((child: any) => extractTextFromBlock(child))
       .filter(Boolean)
       .join(' ')
-      .trim()
-
-    if (text.length > 0) {
-      return text
-    }
   }
 
-  return 'Conteúdo completo ainda não disponível.'
-}
+  function getArticleText(article: BlogPost): string {
+    if (
+      typeof article.excerpt === 'string' &&
+      article.excerpt.trim().length > 0
+    ) {
+      return article.excerpt.trim()
+    }
+
+    if (Array.isArray(article.content)) {
+      const text = article.content
+        .map((block: any) => extractTextFromBlock(block))
+        .filter(Boolean)
+        .join(' ')
+        .trim()
+
+      if (text.length > 0) {
+        return text
+      }
+    }
+
+    return 'Conteúdo completo ainda não disponível.'
+  }
+
   return (
     <section
       id="conteudos"
@@ -390,8 +391,8 @@ function getArticleText(article: BlogPost): string {
                         if (format === 'ordered') {
                           return (
                             <ol
-                              className="list-decimal pl-8 mb-6 space-y-2"
-                              style={{ listStyleType: 'decimal' }}
+                              className="mb-6 space-y-2"
+                              style={{ paddingLeft: 0, listStyle: 'none' }}
                             >
                               {children}
                             </ol>
@@ -400,8 +401,8 @@ function getArticleText(article: BlogPost): string {
 
                         return (
                           <ul
-                            className="list-disc pl-8 mb-6 space-y-2"
-                            style={{ listStyleType: 'disc' }}
+                            className="mb-6 space-y-2"
+                            style={{ paddingLeft: 0, listStyle: 'none' }}
                           >
                             {children}
                           </ul>
@@ -410,10 +411,14 @@ function getArticleText(article: BlogPost): string {
 
                       'list-item': ({ children }) => (
                         <li
-                          className="pl-1"
-                          style={{ display: 'list-item' }}
+                          className="flex items-start gap-3"
+                          style={{ listStyle: 'none' }}
                         >
-                          {children}
+                          <span
+                            className="mt-[10px] w-1.5 h-1.5 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: colors.secondary }}
+                          />
+                          <span className="flex-1">{children}</span>
                         </li>
                       ),
 

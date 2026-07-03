@@ -61,39 +61,36 @@ export function BlogSection() {
     return cleanUrl
   }
 
-function extractTextFromBlock(block: any): string {
-  if (!block) return ''
+function extractTextFromBlock(node: any): string {
+  if (!node) return ''
 
-  if (typeof block.text === 'string') {
-    return block.text
+  if (typeof node.text === 'string') {
+    return node.text
   }
 
-  if (block.type === 'list') {
-    return (
-      block.children
-        ?.map((item: any) => extractTextFromBlock(item))
-        .filter(Boolean)
-        .join(', ') || ''
-    )
+  if (!Array.isArray(node.children)) {
+    return ''
   }
 
-  if (Array.isArray(block.children)) {
-    return block.children
-      .map((child: any) => extractTextFromBlock(child))
+  if (node.type === 'list') {
+    return node.children
+      .map((item: any) => extractTextFromBlock(item))
       .filter(Boolean)
-      .join(' ')
+      .join(' • ')
   }
 
-  return ''
+  return node.children
+    .map((child: any) => extractTextFromBlock(child))
+    .filter(Boolean)
+    .join(' ')
 }
 
-function getArticleText(article: BlogPost) {
-  if (typeof article.excerpt === 'string' && article.excerpt.trim()) {
+function getArticleText(article: BlogPost): string {
+  if (
+    typeof article.excerpt === 'string' &&
+    article.excerpt.trim().length > 0
+  ) {
     return article.excerpt.trim()
-  }
-
-  if (typeof article.content === 'string' && article.content.trim()) {
-    return article.content.trim()
   }
 
   if (Array.isArray(article.content)) {
@@ -103,12 +100,13 @@ function getArticleText(article: BlogPost) {
       .join(' ')
       .trim()
 
-    if (text) return text
+    if (text.length > 0) {
+      return text
+    }
   }
 
   return 'Conteúdo completo ainda não disponível.'
 }
-
   return (
     <section
       id="conteudos"

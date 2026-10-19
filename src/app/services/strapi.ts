@@ -2,6 +2,11 @@ const STRAPI_URL =
   import.meta.env.VITE_STRAPI_URL ||
   'https://dependable-dance-cf7ce840cf.strapiapp.com'
 
+
+// ======================================================
+// TIPOS DO BLOG
+// ======================================================
+
 export type StrapiBlock = {
   type: string
   text?: string
@@ -14,6 +19,7 @@ export type StrapiBlock = {
   strikethrough?: boolean
 }
 
+
 export type BlogPost = {
   id: number
   documentId?: string
@@ -25,110 +31,399 @@ export type BlogPost = {
   readTime?: string | null
   videoUrl?: string | null
   publishedAt?: string
+
   cover?: {
     url?: string
   } | null
 }
 
-function getMediaUrl(cover: any): string | undefined {
-  if (!cover) return undefined
+
+// ======================================================
+// TIPOS DOS ARTICLES
+// ======================================================
+
+export type ArticleBlock = {
+  id: number
+
+  __component: string
+
+  // Rich Text
+  body?: string
+
+  // Quote
+  title?: string
+  text?: string
+
+  // Outros componentes da Dynamic Zone
+  [key: string]: any
+}
+
+
+export type Article = {
+  id: number
+
+  documentId?: string
+
+  title: string
+
+  description?: string | null
+
+  slug?: string | null
+
+  publishedAt?: string
+
+  cover?: {
+    url?: string
+  } | null
+
+  author?: any
+
+  category?: any
+
+  blocks?: ArticleBlock[]
+}
+
+
+// ======================================================
+// FUNÇÃO PARA TRATAR URL DAS IMAGENS DO STRAPI
+// ======================================================
+
+function getMediaUrl(
+  cover: any
+): string | undefined {
+
+  if (!cover) {
+    return undefined
+  }
 
   let media = cover
 
+
+  // Caso seja array
   if (Array.isArray(cover)) {
     media = cover[0]
   }
 
+
+  // Compatibilidade com estrutura antiga do Strapi
   if (cover.data) {
+
     media = Array.isArray(cover.data)
       ? cover.data[0]
       : cover.data
   }
 
-  const attributes = media?.attributes || media
-  const url = attributes?.url
 
-  if (!url) return undefined
+  const attributes =
+    media?.attributes || media
 
+
+  const url =
+    attributes?.url
+
+
+  if (!url) {
+    return undefined
+  }
+
+
+  // Strapi Cloud já retorna URL completa
   if (url.startsWith('http')) {
     return url
   }
 
+
+  // Para Strapi local
   return `${STRAPI_URL}${url}`
 }
 
-export async function getBlogPosts(): Promise<BlogPost[]> {
+
+// ======================================================
+// BLOG SPOTS
+// Usado pelo BlogSection.tsx
+// ======================================================
+
+export async function getBlogPosts():
+  Promise<BlogPost[]> {
+
   const apiUrl =
     `${STRAPI_URL}/api/blog-spots` +
     '?populate=*' +
     '&sort=publishedAt:desc'
 
-  console.log('URL STRAPI:', apiUrl)
 
-  const response = await fetch(apiUrl)
+  console.log(
+    'URL BLOG STRAPI:',
+    apiUrl
+  )
+
+
+  const response =
+    await fetch(apiUrl)
+
 
   if (!response.ok) {
-    const errorBody = await response.text()
 
-    console.error('Erro da API do Strapi:', {
-      status: response.status,
-      body: errorBody,
-    })
+    const errorBody =
+      await response.text()
+
+
+    console.error(
+      'Erro da API do Blog:',
+      {
+        status: response.status,
+        body: errorBody,
+      }
+    )
+
 
     throw new Error(
-      `Erro ao buscar artigos: ${response.status}`
+      `Erro ao buscar artigos do blog: ${response.status}`
     )
   }
 
-  const json = await response.json()
 
-  console.log('RESPOSTA ORIGINAL DO STRAPI:', json)
+  const json =
+    await response.json()
+
+
+  console.log(
+    'BLOG DO STRAPI:',
+    json
+  )
+
 
   if (!Array.isArray(json.data)) {
-    console.error('json.data não é uma lista:', json)
+
+    console.error(
+      'json.data do Blog não é uma lista:',
+      json
+    )
+
     return []
   }
 
-  return json.data.map((item: any) => {
-    /*
-      Strapi 5:
-      os campos normalmente ficam diretamente em item.
 
-      Strapi 4:
-      os campos normalmente ficam em item.attributes.
-    */
-    const attributes = item.attributes || item
+  return json.data.map(
+    (item: any) => {
 
-    const content = attributes.content ?? item.content ?? null
+      /*
+        Strapi 5:
+        campos ficam diretamente no item.
 
-    console.log('POST MAPEADO:', {
-      title: attributes.title,
-      content,
-      contentIsArray: Array.isArray(content),
-    })
+        Strapi 4:
+        campos ficam dentro de attributes.
+      */
 
-    return {
-      id: item.id,
-      documentId: item.documentId,
+      const attributes =
+        item.attributes || item
 
-      title: attributes.title || 'Artigo sem título',
-      slug: attributes.slug || '',
 
-      excerpt: attributes.excerpt ?? null,
+      const content =
+        attributes.content ??
+        item.content ??
+        null
 
-      // Campo indispensável para listas e parágrafos
-      content,
 
-      category: attributes.category ?? null,
-      readTime: attributes.readTime ?? null,
-      videoUrl: attributes.videoUrl ?? null,
-      publishedAt: attributes.publishedAt,
+      return {
 
-      cover: getMediaUrl(attributes.cover)
-        ? {
-            url: getMediaUrl(attributes.cover),
-          }
-        : null,
+        id: item.id,
+
+        documentId:
+          item.documentId ||
+          attributes.documentId,
+
+
+        title:
+          attributes.title ||
+          'Artigo sem título',
+
+
+        slug:
+          attributes.slug || '',
+
+
+        excerpt:
+          attributes.excerpt ??
+          null,
+
+
+        content,
+
+
+        category:
+          attributes.category ??
+          null,
+
+
+        readTime:
+          attributes.readTime ??
+          null,
+
+
+        videoUrl:
+          attributes.videoUrl ??
+          null,
+
+
+        publishedAt:
+          attributes.publishedAt,
+
+
+        cover:
+          getMediaUrl(
+            attributes.cover
+          )
+            ? {
+                url: getMediaUrl(
+                  attributes.cover
+                ),
+              }
+            : null,
+      }
     }
-  })
+  )
+}
+
+
+// ======================================================
+// ARTICLES
+// Usado pelo TestimonialsSection.tsx
+// ======================================================
+
+export async function getArticles():
+  Promise<Article[]> {
+
+  const apiUrl =
+    `${STRAPI_URL}/api/articles` +
+    '?populate=*' +
+    '&sort=publishedAt:desc'
+
+
+  console.log(
+    'URL ARTICLES STRAPI:',
+    apiUrl
+  )
+
+
+  const response =
+    await fetch(apiUrl)
+
+
+  if (!response.ok) {
+
+    const errorBody =
+      await response.text()
+
+
+    console.error(
+      'Erro da API de Articles:',
+      {
+        status: response.status,
+        body: errorBody,
+      }
+    )
+
+
+    throw new Error(
+      `Erro ao buscar Articles: ${response.status}`
+    )
+  }
+
+
+  const json =
+    await response.json()
+
+
+  console.log(
+    'ARTICLES DO STRAPI:',
+    json
+  )
+
+
+  if (!Array.isArray(json.data)) {
+
+    console.error(
+      'json.data de Articles não é uma lista:',
+      json
+    )
+
+    return []
+  }
+
+
+  return json.data.map(
+    (item: any) => {
+
+      /*
+        Compatibilidade com
+        Strapi 4 e Strapi 5
+      */
+
+      const attributes =
+        item.attributes || item
+
+
+      const coverUrl =
+        getMediaUrl(
+          attributes.cover
+        )
+
+
+      return {
+
+        id: item.id,
+
+
+        documentId:
+          item.documentId ||
+          attributes.documentId,
+
+
+        title:
+          attributes.title ||
+          'Artigo sem título',
+
+
+        description:
+          attributes.description ??
+          null,
+
+
+        slug:
+          attributes.slug ??
+          null,
+
+
+        publishedAt:
+          attributes.publishedAt,
+
+
+        cover:
+          coverUrl
+            ? {
+                url: coverUrl,
+              }
+            : null,
+
+
+        author:
+          attributes.author ??
+          null,
+
+
+        category:
+          attributes.category ??
+          null,
+
+
+        blocks:
+          Array.isArray(
+            attributes.blocks
+          )
+            ? attributes.blocks
+            : [],
+      }
+    }
+  )
 }

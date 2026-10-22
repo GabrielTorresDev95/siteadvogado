@@ -1,6 +1,6 @@
 const STRAPI_URL =
   import.meta.env.VITE_STRAPI_URL ||
-  'https://dependable-dance-cf7ce840cf.strapiapp.com'
+  'https://siteadvogado.onrender.com'
 
 
 // ======================================================

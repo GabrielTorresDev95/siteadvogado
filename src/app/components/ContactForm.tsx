@@ -1,133 +1,192 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
-import { Send, Phone, Mail, MapPin, Clock } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
+
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import { motion } from "motion/react";
+import { Send, Phone, Mail, MapPin, Clock } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
+
+type FormData = {
+  name: string;
+  whatsapp: string;
+  email: string;
+  service: string;
+  message: string;
+};
+
+const initialFormData: FormData = {
+  name: "",
+  whatsapp: "",
+  email: "",
+  service: "",
+  message: "",
+};
 
 export function ContactForm() {
   const { colors } = useTheme();
 
-  const [formData, setFormData] = useState({
-    name: '',
-    whatsapp: '',
-    email: '',
-    service: '',
-    message: '',
+  const [formData, setFormData] = useState<FormData>({
+    ...initialFormData,
   });
 
   const [loading, setLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState('');
-  const [statusType, setStatusType] = useState<'success' | 'error' | ''>('');
+  const [statusMessage, setStatusMessage] = useState("");
+  const [statusType, setStatusType] = useState<
+    "success" | "error" | ""
+  >("");
 
   const services = [
-    'Registro de direitos autorais',
-    'Registro de marca (INPI)',
-    'Proteção de obras musicais',
-    'Defesa contra uso indevido',
-    'Consultoria jurídica',
-    'Outro',
+    "Registro de direitos autorais",
+    "Registro de marca (INPI)",
+    "Proteção de obras musicais",
+    "Defesa contra uso indevido",
+    "Consultoria jurídica",
+    "Outro",
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const contactInfo = [
+    {
+      icon: Phone,
+      label: "Telefone",
+      value: "(61) 99662-1304",
+      link: "tel:+5561996621304",
+    },
+    {
+      icon: Mail,
+      label: "Email",
+      value: "contato@barukregistra.com.br",
+      link: "mailto:contato@barukregistra.com.br",
+    },
+    {
+      icon: MapPin,
+      label: "Endereço",
+      value: "Brasília, DF - Brasil",
+      link: null,
+    },
+    {
+      icon: Clock,
+      label: "Horário",
+      value: "Seg a Sex: 9h às 18h",
+      link: null,
+    },
+  ];
+
+  const handleChange = (
+    e: ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (loading) return;
+
     setLoading(true);
-    setStatusMessage('');
-    setStatusType('');
+    setStatusMessage("");
+    setStatusType("");
 
     try {
-      const response = await fetch('/contato.php', {
-        method: 'POST',
+      const response = await fetch("/contato.php", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type") || "";
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao enviar email.');
+      if (!contentType.includes("application/json")) {
+        throw new Error(
+          "O servidor não retornou uma resposta JSON válida."
+        );
       }
 
-      setStatusMessage('Mensagem enviada com sucesso!');
-      setStatusType('success');
+      const data: {
+        error?: string;
+        success?: boolean;
+        message?: string;
+      } = await response.json();
 
-      setFormData({
-        name: '',
-        whatsapp: '',
-        email: '',
-        service: '',
-        message: '',
-      });
+      if (!response.ok || data.success === false) {
+        throw new Error(
+          data.error || "Não foi possível enviar o formulário."
+        );
+      }
+
+      setStatusMessage("Mensagem enviada com sucesso!");
+      setStatusType("success");
+      setFormData({ ...initialFormData });
     } catch (error) {
-      console.error('Erro ao enviar formulário:', error);
-      setStatusMessage('Não foi possível enviar sua mensagem. Tente novamente.');
-      setStatusType('error');
+      console.error("Erro ao enviar formulário:", error);
+
+      setStatusMessage(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível enviar sua mensagem. Tente novamente."
+      );
+
+      setStatusType("error");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const inputStyle = {
+    backgroundColor: `${colors.primary}05`,
+    border: `1px solid ${colors.secondary}30`,
+    color: colors.text,
   };
 
-  const contactInfo = [
-    {
-      icon: Phone,
-      label: 'Telefone',
-      value: '(61) 99662-1304',
-      link: 'tel:+5561996621304',
-    },
-    {
-      icon: Mail,
-      label: 'Email',
-      value: 'contato@barukregistra.com.br',
-      link: 'mailto:torres.almeida95@gmail.com',
-    },
-    {
-      icon: MapPin,
-      label: 'Endereço',
-      value: 'Brasilia, DF - Brasil',
-      link: null,
-    },
-    {
-      icon: Clock,
-      label: 'Horário',
-      value: 'Seg Sex: 9h às 18h',
-      link: null,
-    },
-  ];
+  const inputClass =
+    "w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all";
 
   return (
-    <section id="contato" className="py-20" style={{ backgroundColor: colors.background }}>
+    <section
+      id="contato"
+      className="py-20"
+      style={{ backgroundColor: colors.background }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* CABEÇALHO */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: colors.primary }}>
+          <h2
+            className="text-4xl md:text-5xl font-bold mb-4"
+            style={{ color: colors.primary }}
+          >
             Agende sua consulta
           </h2>
-          <p className="text-lg max-w-2xl mx-auto" style={{ color: colors.textLight }}>
-            Entre em contato para uma análise personalizada do seu caso
+
+          <p
+            className="text-lg max-w-2xl mx-auto"
+            style={{ color: colors.textLight }}
+          >
+            Entre em contato para uma análise personalizada
+            do seu caso
           </p>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12">
+          {/* FORMULÁRIO */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* NOME */}
               <div>
                 <label
                   htmlFor="name"
@@ -136,6 +195,7 @@ export function ContactForm() {
                 >
                   Nome completo *
                 </label>
+
                 <input
                   type="text"
                   id="name"
@@ -143,16 +203,13 @@ export function ContactForm() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all"
-                  style={{
-                    backgroundColor: `${colors.primary}05`,
-                    border: `1px solid ${colors.secondary}30`,
-                    color: colors.text,
-                  }}
+                  className={inputClass}
+                  style={inputStyle}
                   placeholder="Seu nome"
                 />
               </div>
 
+              {/* WHATSAPP */}
               <div>
                 <label
                   htmlFor="whatsapp"
@@ -161,6 +218,7 @@ export function ContactForm() {
                 >
                   WhatsApp *
                 </label>
+
                 <input
                   type="tel"
                   id="whatsapp"
@@ -168,16 +226,13 @@ export function ContactForm() {
                   required
                   value={formData.whatsapp}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all"
-                  style={{
-                    backgroundColor: `${colors.primary}05`,
-                    border: `1px solid ${colors.secondary}30`,
-                    color: colors.text,
-                  }}
-                  placeholder="(11) 99999-9999"
+                  className={inputClass}
+                  style={inputStyle}
+                  placeholder="(61) 99999-9999"
                 />
               </div>
 
+              {/* EMAIL */}
               <div>
                 <label
                   htmlFor="email"
@@ -186,6 +241,7 @@ export function ContactForm() {
                 >
                   Email *
                 </label>
+
                 <input
                   type="email"
                   id="email"
@@ -193,16 +249,13 @@ export function ContactForm() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all"
-                  style={{
-                    backgroundColor: `${colors.primary}05`,
-                    border: `1px solid ${colors.secondary}30`,
-                    color: colors.text,
-                  }}
+                  className={inputClass}
+                  style={inputStyle}
                   placeholder="seu@email.com"
                 />
               </div>
 
+              {/* SERVIÇO */}
               <div>
                 <label
                   htmlFor="service"
@@ -211,28 +264,27 @@ export function ContactForm() {
                 >
                   Tipo de serviço *
                 </label>
+
                 <select
                   id="service"
                   name="service"
                   required
                   value={formData.service}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all"
-                  style={{
-                    backgroundColor: `${colors.primary}05`,
-                    border: `1px solid ${colors.secondary}30`,
-                    color: colors.text,
-                  }}
+                  className={inputClass}
+                  style={inputStyle}
                 >
                   <option value="">Selecione um serviço</option>
-                  {services.map((service, index) => (
-                    <option key={index} value={service}>
+
+                  {services.map((service) => (
+                    <option key={service} value={service}>
                       {service}
                     </option>
                   ))}
                 </select>
               </div>
 
+              {/* MENSAGEM */}
               <div>
                 <label
                   htmlFor="message"
@@ -241,46 +293,60 @@ export function ContactForm() {
                 >
                   Mensagem (opcional)
                 </label>
+
                 <textarea
                   id="message"
                   name="message"
                   rows={4}
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all resize-none"
-                  style={{
-                    backgroundColor: `${colors.primary}05`,
-                    border: `1px solid ${colors.secondary}30`,
-                    color: colors.text,
-                  }}
+                  className={`${inputClass} resize-none`}
+                  style={inputStyle}
                   placeholder="Conte-nos mais sobre seu caso..."
                 />
               </div>
 
+              {/* BOTÃO */}
               <motion.button
                 type="submit"
                 disabled={loading}
-                whileHover={{ scale: loading ? 1 : 1.02 }}
-                whileTap={{ scale: loading ? 1 : 0.98 }}
+                whileHover={{
+                  scale: loading ? 1 : 1.02,
+                }}
+                whileTap={{
+                  scale: loading ? 1 : 0.98,
+                }}
                 className="w-full px-8 py-4 rounded-lg text-lg font-semibold flex items-center justify-center space-x-3 shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                 style={{
                   backgroundColor: colors.secondary,
                   color: colors.background,
                 }}
               >
-                <span>{loading ? 'Enviando...' : 'Agendar consulta'}</span>
+                <span>
+                  {loading ? "Enviando..." : "Agendar consulta"}
+                </span>
+
                 <Send className="w-5 h-5" />
               </motion.button>
 
-              <p className="text-xs text-center" style={{ color: colors.textLight }}>
-                Ao enviar, sua mensagem será encaminhada diretamente para o email.
+              <p
+                className="text-xs text-center"
+                style={{ color: colors.textLight }}
+              >
+                Ao enviar, sua mensagem será encaminhada
+                para nossa equipe.
               </p>
 
+              {/* STATUS */}
               {statusMessage && (
                 <p
+                  role={statusType === "error" ? "alert" : "status"}
                   className="text-sm text-center font-medium"
                   style={{
-                    color: statusType === 'success' ? '#16a34a' : '#dc2626',
+                    color:
+                      statusType === "success"
+                        ? "#16a34a"
+                        : "#dc2626",
                   }}
                 >
                   {statusMessage}
@@ -289,6 +355,7 @@ export function ContactForm() {
             </form>
           </motion.div>
 
+          {/* INFORMAÇÕES DE CONTATO */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -296,73 +363,118 @@ export function ContactForm() {
             className="space-y-8"
           >
             <div className="space-y-4">
-              {contactInfo.map((info, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="p-6 rounded-xl flex items-start space-x-4"
-                  style={{
-                    backgroundColor: `${colors.primary}05`,
-                    border: `1px solid ${colors.secondary}20`,
-                  }}
-                >
-                  <div
-                    className="p-3 rounded-lg flex-shrink-0"
-                    style={{ backgroundColor: `${colors.secondary}20` }}
+              {contactInfo.map((info, index) => {
+                const Icon = info.icon;
+
+                return (
+                  <motion.div
+                    key={info.label}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-6 rounded-xl flex items-start space-x-4"
+                    style={{
+                      backgroundColor: `${colors.primary}05`,
+                      border: `1px solid ${colors.secondary}20`,
+                    }}
                   >
-                    <info.icon className="w-6 h-6" style={{ color: colors.secondary }} />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-1" style={{ color: colors.primary }}>
-                      {info.label}
-                    </h4>
-                    {info.link ? (
-                      <a
-                        href={info.link}
-                        className="hover:opacity-80 transition-opacity"
-                        style={{ color: colors.textLight }}
+                    <div
+                      className="p-3 rounded-lg flex-shrink-0"
+                      style={{
+                        backgroundColor: `${colors.secondary}20`,
+                      }}
+                    >
+                      <Icon
+                        className="w-6 h-6"
+                        style={{ color: colors.secondary }}
+                      />
+                    </div>
+
+                    <div>
+                      <h4
+                        className="font-semibold mb-1"
+                        style={{ color: colors.primary }}
                       >
-                        {info.value}
-                      </a>
-                    ) : (
-                      <p style={{ color: colors.textLight }}>{info.value}</p>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
+                        {info.label}
+                      </h4>
+
+                      {info.link ? (
+                        <a
+                          href={info.link}
+                          className="hover:opacity-80 transition-opacity"
+                          style={{ color: colors.textLight }}
+                        >
+                          {info.value}
+                        </a>
+                      ) : (
+                        <p style={{ color: colors.textLight }}>
+                          {info.value}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
 
+            {/* PRIMEIRA CONSULTA */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="p-8 rounded-xl"
               style={{
-                background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.textLight} 100%)`,
+                background: `linear-gradient(
+                  135deg,
+                  ${colors.primary} 0%,
+                  ${colors.textLight} 100%
+                )`,
               }}
             >
-              <h3 className="text-2xl font-bold mb-4" style={{ color: colors.background }}>
+              <h3
+                className="text-2xl font-bold mb-4"
+                style={{ color: colors.background }}
+              >
                 Primeira consulta
               </h3>
-              <p className="mb-6 opacity-90" style={{ color: colors.background }}>
-                Agende uma consulta inicial para análise do seu caso. Atendimento personalizado e
-                confidencial.
+
+              <p
+                className="mb-6 opacity-90"
+                style={{ color: colors.background }}
+              >
+                Agende uma consulta inicial para análise
+                do seu caso. Atendimento personalizado
+                e confidencial.
               </p>
-              <ul className="space-y-3" style={{ color: colors.background }}>
+
+              <ul
+                className="space-y-3"
+                style={{ color: colors.background }}
+              >
                 <li className="flex items-start space-x-2">
-                  <span style={{ color: colors.secondary }}>✓</span>
+                  <span style={{ color: colors.secondary }}>
+                    ✓
+                  </span>
                   <span>Análise detalhada do caso</span>
                 </li>
+
                 <li className="flex items-start space-x-2">
-                  <span style={{ color: colors.secondary }}>✓</span>
-                  <span>Orientação estratégica personalizada</span>
+                  <span style={{ color: colors.secondary }}>
+                    ✓
+                  </span>
+                  <span>
+                    Orientação estratégica personalizada
+                  </span>
                 </li>
+
                 <li className="flex items-start space-x-2">
-                  <span style={{ color: colors.secondary }}>✓</span>
-                  <span>Proposta de honorários transparente</span>
+                  <span style={{ color: colors.secondary }}>
+                    ✓
+                  </span>
+                  <span>
+                    Proposta de honorários transparente
+                  </span>
                 </li>
               </ul>
             </motion.div>

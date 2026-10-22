@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
+
+import { useState } from "react";
+import { motion } from "motion/react";
 import {
   Instagram,
   Linkedin,
@@ -7,11 +8,11 @@ import {
   Phone,
   MapPin,
   Youtube,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { useTheme } from '../context/ThemeContext';
-import { PoliticaPrivacidadeSection } from '../components/politicaprivacidadesection';
-import logo from '../assets/barukregistra.jpg';
+import { useTheme } from "../context/ThemeContext";
+import { PoliticaPrivacidadeSection } from "../components/politicaprivacidadesection";
+import logo from "../assets/barukregistra.jpg";
 
 export function Footer() {
   const { colors } = useTheme();
@@ -19,107 +20,77 @@ export function Footer() {
 
   const footerLinks = {
     servicos: [
-      'Direitos Autorais',
-      'Registro de Marcas',
-      'Proteção Musical',
-      'Defesa Jurídica',
-      'Consultoria',
+      "Direitos Autorais",
+      "Registro de Marcas",
+      "Proteção Musical",
+      "Defesa Jurídica",
+      "Consultoria",
     ],
-
     recursos: [
-      'Blog Jurídico',
-      'Artigos',
-      'Guias',
-      'FAQ',
-      'Casos de Sucesso',
+      "Blog Jurídico",
+      "Artigos",
+      "Guias",
+      "FAQ",
+      "Casos de Sucesso",
     ],
-
     empresa: [
-      'Sobre nós',
-      'Equipe',
-      'Contato',
-      'Política de Privacidade',
-      'Termos de Uso',
+      "Sobre nós",
+      "Equipe",
+      "Contato",
+      "Política de Privacidade",
+      "Termos de Uso",
     ],
   };
 
   const socialLinks = [
     {
       icon: Instagram,
-      url: 'https://www.instagram.com/barukregistra/',
-      label: 'Instagram',
+      url: "https://www.instagram.com/barukregistra/",
+      label: "Instagram",
     },
     {
       icon: Linkedin,
-      url: 'https://www.linkedin.com/in/jaderwindson/',
-      label: 'LinkedIn',
+      url: "https://www.linkedin.com/in/jaderwindson/",
+      label: "LinkedIn",
     },
     {
       icon: Youtube,
-      url: 'https://www.youtube.com/@BarukRegistra',
-      label: 'Youtube',
+      url: "https://www.youtube.com/@BarukRegistra",
+      label: "YouTube",
     },
   ];
 
-  /**
-   * Faz scroll suave para uma seção da página.
-   */
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
 
     if (element) {
       element.scrollIntoView({
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   };
 
-  /**
-   * Controla os links internos do Footer.
-   */
   const handleFooterLinkClick = (link: string) => {
-    if (link === 'Política de Privacidade') {
+    if (link === "Política de Privacidade") {
       setShowPrivacy(true);
       return;
     }
 
-    if (link === 'Sobre nós') {
-      scrollToSection('#sobre');
-      return;
-    }
+    const sectionMap: Record<string, string> = {
+      "Sobre nós": "#sobre",
+      "Contato": "#contato",
+      "Direitos Autorais": "#servicos",
+      "Registro de Marcas": "#servicos",
+      "Proteção Musical": "#servicos",
+      "Defesa Jurídica": "#servicos",
+      "Consultoria": "#servicos",
+      "Blog Jurídico": "#blog",
+    };
 
-    if (link === 'Contato') {
-      scrollToSection('#contato');
-      return;
-    }
+    const target = sectionMap[link];
 
-    if (link === 'Direitos Autorais') {
-      scrollToSection('#servicos');
-      return;
-    }
-
-    if (link === 'Registro de Marcas') {
-      scrollToSection('#servicos');
-      return;
-    }
-
-    if (link === 'Proteção Musical') {
-      scrollToSection('#servicos');
-      return;
-    }
-
-    if (link === 'Defesa Jurídica') {
-      scrollToSection('#servicos');
-      return;
-    }
-
-    if (link === 'Consultoria') {
-      scrollToSection('#servicos');
-      return;
-    }
-
-    if (link === 'Blog Jurídico') {
-      scrollToSection('#blog');
+    if (target) {
+      scrollToSection(target);
     }
   };
 
@@ -130,27 +101,16 @@ export function Footer() {
           backgroundColor: colors.primary,
         }}
       >
-        {/* CONTEÚDO PRINCIPAL DO FOOTER */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-12">
-
-            {/* LOGO / EMPRESA */}
+            {/* EMPRESA */}
             <div className="lg:col-span-2">
               <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 20,
-                }}
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                viewport={{
-                  once: true,
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 className="flex items-center space-x-3 mb-6"
               >
-                {/* LOGO */}
                 <div className="w-16 h-16 flex items-center justify-center">
                   <img
                     src={logo}
@@ -182,43 +142,27 @@ export function Footer() {
 
               {/* DESCRIÇÃO */}
               <motion.p
-                initial={{
-                  opacity: 0,
-                  y: 20,
-                }}
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                viewport={{
-                  once: true,
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 className="mb-6"
                 style={{
                   color: `${colors.background}E6`,
                 }}
               >
-                Escritório especializado em direitos autorais, registro de
-                marcas e proteção de obras musicais. Atuação estratégica para
-                artistas, produtores e empresas.
+                Escritório especializado em direitos autorais,
+                registro de marcas e proteção de obras musicais.
+                Atuação estratégica para artistas, produtores
+                e empresas.
               </motion.p>
 
               {/* CONTATOS */}
               <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 20,
-                }}
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                viewport={{
-                  once: true,
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 className="space-y-3"
               >
-                {/* TELEFONE */}
                 <div className="flex items-center space-x-3">
                   <Phone
                     className="w-5 h-5"
@@ -238,7 +182,6 @@ export function Footer() {
                   </a>
                 </div>
 
-                {/* EMAIL */}
                 <div className="flex items-center space-x-3">
                   <Mail
                     className="w-5 h-5"
@@ -258,7 +201,6 @@ export function Footer() {
                   </a>
                 </div>
 
-                {/* LOCALIZAÇÃO */}
                 <div className="flex items-center space-x-3">
                   <MapPin
                     className="w-5 h-5"
@@ -283,20 +225,10 @@ export function Footer() {
               ([category, links], index) => (
                 <motion.div
                   key={category}
-                  initial={{
-                    opacity: 0,
-                    y: 20,
-                  }}
-                  whileInView={{
-                    opacity: 1,
-                    y: 0,
-                  }}
-                  viewport={{
-                    once: true,
-                  }}
-                  transition={{
-                    delay: index * 0.1,
-                  }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
                 >
                   <h4
                     className="font-bold mb-4 capitalize"
@@ -315,13 +247,7 @@ export function Footer() {
                           onClick={() =>
                             handleFooterLinkClick(link)
                           }
-                          className="
-                            opacity-80
-                            hover:opacity-100
-                            transition-opacity
-                            inline-block
-                            text-left
-                          "
+                          className="opacity-80 hover:opacity-100 transition-opacity inline-block text-left"
                           style={{
                             color: colors.background,
                           }}
@@ -336,27 +262,17 @@ export function Footer() {
             )}
           </div>
 
-          {/* REDES SOCIAIS + VOLTAR AO TOPO */}
+          {/* REDES SOCIAIS */}
           <motion.div
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            whileInView={{
-              opacity: 1,
-              y: 0,
-            }}
-            viewport={{
-              once: true,
-            }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="mt-12 pt-8"
             style={{
               borderTop: `1px solid ${colors.background}30`,
             }}
           >
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-
-              {/* REDES SOCIAIS */}
               <div className="flex space-x-4">
                 {socialLinks.map((social) => {
                   const SocialIcon = social.icon;
@@ -374,12 +290,7 @@ export function Footer() {
                       whileTap={{
                         scale: 0.9,
                       }}
-                      className="
-                        p-3
-                        rounded-lg
-                        transition-all
-                        shadow-sm
-                      "
+                      className="p-3 rounded-lg transition-all shadow-sm"
                       style={{
                         backgroundColor: `${colors.background}25`,
                         color: colors.background,
@@ -393,11 +304,11 @@ export function Footer() {
                 })}
               </div>
 
-              {/* BOTÃO VOLTAR AO TOPO */}
+              {/* VOLTAR AO TOPO */}
               <motion.button
                 type="button"
                 onClick={() =>
-                  scrollToSection('#inicio')
+                  scrollToSection("#inicio")
                 }
                 whileHover={{
                   scale: 1.05,
@@ -405,14 +316,7 @@ export function Footer() {
                 whileTap={{
                   scale: 0.95,
                 }}
-                className="
-                  px-6
-                  py-3
-                  rounded-lg
-                  font-semibold
-                  transition-all
-                  shadow-md
-                "
+                className="px-6 py-3 rounded-lg font-semibold transition-all shadow-md"
                 style={{
                   backgroundColor: `${colors.background}E6`,
                   color: colors.primary,
@@ -434,28 +338,22 @@ export function Footer() {
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-
               <p
                 style={{
                   color: `${colors.background}B3`,
                 }}
               >
-                © 2026 Direito Autoral - Todos os direitos
-                reservados
+                © {new Date().getFullYear()} Direito Autoral -
+                Todos os direitos reservados
               </p>
 
               <div className="flex space-x-6">
-
-                {/* POLÍTICA DE PRIVACIDADE */}
                 <button
                   type="button"
                   onClick={() =>
                     setShowPrivacy(true)
                   }
-                  className="
-                    hover:opacity-80
-                    transition-opacity
-                  "
+                  className="hover:opacity-80 transition-opacity"
                   style={{
                     color: `${colors.background}B3`,
                   }}
@@ -463,19 +361,13 @@ export function Footer() {
                   Política de Privacidade
                 </button>
 
-                {/* TERMOS */}
-                <button
-                  type="button"
-                  className="
-                    hover:opacity-80
-                    transition-opacity
-                  "
+                <span
                   style={{
                     color: `${colors.background}B3`,
                   }}
                 >
                   Termos de Uso
-                </button>
+                </span>
               </div>
             </div>
           </div>
@@ -495,20 +387,17 @@ export function Footer() {
                 color: `${colors.background}99`,
               }}
             >
-              OAB/SP 123.456 • Este site não oferece garantias de
-              resultados. Cada caso é único e analisado
-              individualmente.
+              Este site não oferece garantias de resultados.
+              Cada caso é único e analisado individualmente.
             </p>
           </div>
         </div>
       </footer>
 
-      {/* MODAL POLÍTICA DE PRIVACIDADE */}
+      {/* MODAL DE PRIVACIDADE */}
       {showPrivacy && (
         <PoliticaPrivacidadeSection
-          onClose={() =>
-            setShowPrivacy(false)
-          }
+          onClose={() => setShowPrivacy(false)}
         />
       )}
     </>

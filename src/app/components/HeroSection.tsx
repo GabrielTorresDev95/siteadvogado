@@ -1,18 +1,18 @@
+
+import type { MouseEvent } from "react";
 import {
   motion,
   useMotionTemplate,
   useMotionValue,
   useSpring,
-} from 'framer-motion';
-
+} from "framer-motion";
 import {
   ArrowRight,
   Shield,
   Music,
   Copyright,
-} from 'lucide-react';
-
-import { useTheme } from '../context/ThemeContext';
+} from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 
 export function HeroSection() {
   const { colors } = useTheme();
@@ -30,35 +30,36 @@ export function HeroSection() {
     damping: 20,
   });
 
-  const bgTransform =
-    useMotionTemplate`translate3d(${springX}px, ${springY}px, 0) scale(1.12)`;
+  const bgTransform = useMotionTemplate`
+    translate3d(${springX}px, ${springY}px, 0)
+    scale(1.12)
+  `;
 
-  const contentTransform =
-    useMotionTemplate`translate3d(${springX}px, ${springY}px, 0)`;
+  const contentTransform = useMotionTemplate`
+    translate3d(${springX}px, ${springY}px, 0)
+  `;
 
-  const cardsTransform =
-    useMotionTemplate`translate3d(calc(${springX}px * -0.6), calc(${springY}px * -0.6), 0)`;
+  const cardsTransform = useMotionTemplate`
+    translate3d(
+      calc(${springX}px * -0.6),
+      calc(${springY}px * -0.6),
+      0
+    )
+  `;
 
   const handleMouseMove = (
-    e: React.MouseEvent<HTMLElement>
+    event: MouseEvent<HTMLElement>
   ) => {
-    const {
-      currentTarget,
-      clientX,
-      clientY,
-    } = e;
+    const { currentTarget, clientX, clientY } = event;
+    const rect = currentTarget.getBoundingClientRect();
 
-    const rect =
-      currentTarget.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
 
     const x = clientX - rect.left;
     const y = clientY - rect.top;
 
-    const moveX =
-      ((x / rect.width) - 0.5) * 24;
-
-    const moveY =
-      ((y / rect.height) - 0.5) * 24;
+    const moveX = (x / rect.width - 0.5) * 24;
+    const moveY = (y / rect.height - 0.5) * 24;
 
     mouseX.set(moveX);
     mouseY.set(moveY);
@@ -70,74 +71,70 @@ export function HeroSection() {
   };
 
   const scrollToContact = () => {
-    const element =
-      document.querySelector('#contato');
+    const element = document.querySelector("#contato");
 
     if (element) {
       element.scrollIntoView({
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   };
+
+  const areas = [
+    "Marcas",
+    "Direitos Autorais",
+    "Contratos",
+  ];
+
+  const services = [
+    {
+      icon: Music,
+      label: "Direitos Autorais",
+    },
+    {
+      icon: Copyright,
+      label: "Registro de Marca",
+    },
+    {
+      icon: Shield,
+      label: "Proteção Jurídica",
+    },
+    {
+      icon: Shield,
+      label: "Contratos",
+    },
+  ];
 
   return (
     <section
       id="inicio"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="
-        relative
-        min-h-screen
-        flex
-        items-center
-        pt-20
-        overflow-hidden
-      "
+      className="relative min-h-screen flex items-center pt-20 overflow-hidden"
     >
-      {/* ============================= */}
       {/* BACKGROUND */}
-      {/* ============================= */}
-
       <div className="absolute inset-0 z-0 overflow-hidden">
-
         <motion.div
           style={{
             transform: bgTransform,
           }}
-          className="
-            absolute
-            inset-0
-            will-change-transform
-          "
+          className="absolute inset-0 will-change-transform"
         />
-
-        {/* Gradiente principal */}
 
         <div
           className="absolute inset-0"
           style={{
-            background: `
-              linear-gradient(
-                135deg,
-                ${colors.primary}e8 0%,
-                ${colors.primary}cc 100%
-              )
-            `,
+            background: `linear-gradient(
+              135deg,
+              ${colors.primary}e8 0%,
+              ${colors.primary}cc 100%
+            )`,
           }}
         />
 
-        {/* Efeito luminoso superior */}
-
+        {/* EFEITO LUMINOSO SUPERIOR */}
         <motion.div
-          className="
-            absolute
-            -top-20
-            -left-20
-            w-72
-            h-72
-            rounded-full
-            blur-3xl
-          "
+          className="absolute -top-20 -left-20 w-72 h-72 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.08, 1],
             opacity: [0.18, 0.3, 0.18],
@@ -145,26 +142,16 @@ export function HeroSection() {
           transition={{
             duration: 8,
             repeat: Infinity,
-            ease: 'easeInOut',
+            ease: "easeInOut",
           }}
           style={{
-            backgroundColor:
-              `${colors.secondary}55`,
+            backgroundColor: `${colors.secondary}55`,
           }}
         />
 
-        {/* Efeito luminoso inferior */}
-
+        {/* EFEITO LUMINOSO INFERIOR */}
         <motion.div
-          className="
-            absolute
-            bottom-0
-            right-0
-            w-80
-            h-80
-            rounded-full
-            blur-3xl
-          "
+          className="absolute bottom-0 right-0 w-80 h-80 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.12, 1],
             opacity: [0.1, 0.22, 0.1],
@@ -172,47 +159,23 @@ export function HeroSection() {
           transition={{
             duration: 10,
             repeat: Infinity,
-            ease: 'easeInOut',
+            ease: "easeInOut",
           }}
           style={{
-            backgroundColor:
-              `${colors.background}20`,
+            backgroundColor: `${colors.background}20`,
           }}
         />
       </div>
 
-      {/* ============================= */}
       {/* CONTEÚDO PRINCIPAL */}
-      {/* ============================= */}
-
       <motion.div
         style={{
           transform: contentTransform,
         }}
-        className="
-          relative
-          z-10
-          max-w-7xl
-          mx-auto
-          px-4
-          sm:px-6
-          lg:px-8
-          py-20
-          will-change-transform
-        "
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 will-change-transform"
       >
-        <div
-          className="
-            grid
-            md:grid-cols-2
-            gap-12
-            items-center
-          "
-        >
-          {/* ========================= */}
+        <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* LADO ESQUERDO */}
-          {/* ========================= */}
-
           <motion.div
             initial={{
               opacity: 0,
@@ -226,9 +189,7 @@ export function HeroSection() {
               duration: 0.8,
             }}
           >
-
-            {/* Badge */}
-
+            {/* BADGE */}
             <motion.div
               initial={{
                 opacity: 0,
@@ -241,23 +202,11 @@ export function HeroSection() {
               transition={{
                 delay: 0.2,
               }}
-              className="
-                inline-flex
-                items-center
-                gap-2
-                px-4
-                py-2
-                rounded-full
-                mb-6
-                backdrop-blur-md
-                border
-              "
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 backdrop-blur-md border"
               style={{
-                backgroundColor:
-                  `${colors.secondary}20`,
+                backgroundColor: `${colors.secondary}20`,
                 color: colors.secondary,
-                borderColor:
-                  `${colors.secondary}30`,
+                borderColor: `${colors.secondary}30`,
               }}
             >
               <Shield className="w-4 h-4" />
@@ -267,8 +216,7 @@ export function HeroSection() {
               </span>
             </motion.div>
 
-            {/* Título */}
-
+            {/* TÍTULO */}
             <motion.h1
               initial={{
                 opacity: 0,
@@ -281,20 +229,12 @@ export function HeroSection() {
               transition={{
                 delay: 0.3,
               }}
-              className="
-                text-4xl
-                md:text-5xl
-                lg:text-6xl
-                font-bold
-                mb-6
-                leading-tight
-              "
+              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
               style={{
                 color: colors.background,
               }}
             >
-              Proteção, estruturação e defesa de{' '}
-
+              Proteção, estruturação e defesa de{" "}
               <span
                 style={{
                   color: colors.secondary,
@@ -304,8 +244,7 @@ export function HeroSection() {
               </span>
             </motion.h1>
 
-            {/* Descrição */}
-
+            {/* DESCRIÇÃO */}
             <motion.p
               initial={{
                 opacity: 0,
@@ -318,28 +257,19 @@ export function HeroSection() {
               transition={{
                 delay: 0.4,
               }}
-              className="
-                text-lg
-                md:text-xl
-                mb-8
-                leading-relaxed
-                opacity-90
-              "
+              className="text-lg md:text-xl mb-8 leading-relaxed opacity-90"
               style={{
                 color: colors.background,
               }}
             >
-              Atuação técnica e estratégica em
-              marcas, direitos autorais, contratos,
-              inovação e proteção jurídica de
-              ativos intangíveis.
+              Atuação técnica e estratégica em marcas,
+              direitos autorais, contratos, inovação e
+              proteção jurídica de ativos intangíveis.
             </motion.p>
 
-            {/* ========================= */}
-            {/* BOTÃO AZUL CLARO */}
-            {/* ========================= */}
-
+            {/* BOTÃO DE ATENDIMENTO */}
             <motion.button
+              type="button"
               initial={{
                 opacity: 0,
                 y: 20,
@@ -358,92 +288,29 @@ export function HeroSection() {
                 scale: 0.95,
               }}
               onClick={scrollToContact}
-              className="
-                group
-                relative
-                overflow-hidden
-                px-8
-                py-4
-                rounded-xl
-                text-lg
-                font-semibold
-                flex
-                items-center
-                gap-3
-                shadow-2xl
-              "
+              className="group relative overflow-hidden px-8 py-4 rounded-xl text-lg font-semibold flex items-center gap-3 shadow-2xl"
               style={{
-                backgroundColor: '#7a9cb4',
-                color: '#ffffff',
+                backgroundColor: "#7a9cb4",
+                color: "#ffffff",
               }}
             >
-              {/* Efeito hover */}
+              <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition bg-white/20" />
 
-              <span
-                className="
-                  absolute
-                  inset-0
-                  opacity-0
-                  group-hover:opacity-100
-                  transition
-                  bg-white/20
-                "
-              />
-
-              {/* Efeito de brilho */}
-
-              <span
-                className="
-                  absolute
-                  -left-10
-                  top-0
-                  h-full
-                  w-10
-                  bg-white/30
-                  skew-x-12
-                  group-hover:left-full
-                  transition-all
-                  duration-700
-                "
-              />
+              <span className="absolute -left-10 top-0 h-full w-10 bg-white/30 skew-x-12 group-hover:left-full transition-all duration-700" />
 
               <span className="relative">
                 Solicitar atendimento
               </span>
 
-              <ArrowRight
-                className="
-                  relative
-                  w-5
-                  h-5
-                "
-              />
+              <ArrowRight className="relative w-5 h-5" />
             </motion.button>
 
-            {/* ========================= */}
             {/* ÁREAS DE ATUAÇÃO */}
-            {/* ========================= */}
-
-            <div
-              className="
-                grid
-                grid-cols-1
-                sm:grid-cols-3
-                gap-6
-                mt-12
-              "
-            >
-              {[
-                'Marcas',
-                'Direitos Autorais',
-                'Contratos',
-              ].map((item, index) => (
-                <div key={index}>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12">
+              {areas.map((item) => (
+                <div key={item}>
                   <div
-                    className="
-                      text-xl
-                      font-bold
-                    "
+                    className="text-xl font-bold"
                     style={{
                       color: colors.primary,
                     }}
@@ -452,10 +319,7 @@ export function HeroSection() {
                   </div>
 
                   <div
-                    className="
-                      text-sm
-                      opacity-80
-                    "
+                    className="text-sm opacity-80"
                     style={{
                       color: colors.background,
                     }}
@@ -467,10 +331,7 @@ export function HeroSection() {
             </div>
           </motion.div>
 
-          {/* ========================= */}
-          {/* CARDS LADO DIREITO */}
-          {/* ========================= */}
-
+          {/* CARDS DO LADO DIREITO */}
           <motion.div
             style={{
               transform: cardsTransform,
@@ -487,87 +348,50 @@ export function HeroSection() {
               delay: 0.7,
               duration: 0.8,
             }}
-            className="
-              hidden
-              md:grid
-              grid-cols-2
-              gap-6
-              will-change-transform
-            "
+            className="hidden md:grid grid-cols-2 gap-6 will-change-transform"
           >
-            {[
-              {
-                icon: Music,
-                label: 'Direitos Autorais',
-              },
-              {
-                icon: Copyright,
-                label: 'Registro de Marca',
-              },
-              {
-                icon: Shield,
-                label: 'Proteção Jurídica',
-              },
-              {
-                icon: Shield,
-                label: 'Contratos',
-              },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                whileHover={{
-                  scale: 1.05,
-                  y: -6,
-                }}
-                className="
-                  p-8
-                  rounded-2xl
-                  backdrop-blur-md
-                  border
-                "
-                style={{
-                  backgroundColor:
-                    'rgba(255,255,255,0.08)',
+            {services.map((item) => {
+              const Icon = item.icon;
 
-                  borderColor:
-                    `${colors.secondary}40`,
-
-                  boxShadow:
-                    '0 20px 40px rgba(0,0,0,0.12)',
-                }}
-              >
-                <item.icon
-                  className="
-                    w-10
-                    h-10
-                    mb-4
-                  "
-                  style={{
-                    color: colors.secondary,
+              return (
+                <motion.div
+                  key={item.label}
+                  whileHover={{
+                    scale: 1.05,
+                    y: -6,
                   }}
-                />
-
-                <h3
-                  className="
-                    text-lg
-                    font-semibold
-                  "
+                  className="p-8 rounded-2xl backdrop-blur-md border"
                   style={{
-                    color: colors.background,
+                    backgroundColor:
+                      "rgba(255,255,255,0.08)",
+                    borderColor: `${colors.secondary}40`,
+                    boxShadow:
+                      "0 20px 40px rgba(0,0,0,0.12)",
                   }}
                 >
-                  {item.label}
-                </h3>
-              </motion.div>
-            ))}
+                  <Icon
+                    className="w-10 h-10 mb-4"
+                    style={{
+                      color: colors.secondary,
+                    }}
+                  />
+
+                  <h3
+                    className="text-lg font-semibold"
+                    style={{
+                      color: colors.background,
+                    }}
+                  >
+                    {item.label}
+                  </h3>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </motion.div>
 
-      {/* ============================= */}
-      {/* INDICADOR DE SCROLL */}
-      {/* ============================= */}
-
+      {/* INDICADOR DE ROLAGEM */}
       <motion.div
         animate={{
           y: [0, 10, 0],
@@ -576,38 +400,18 @@ export function HeroSection() {
           repeat: Infinity,
           duration: 2,
         }}
-        className="
-          absolute
-          bottom-8
-          left-1/2
-          -translate-x-1/2
-          z-10
-        "
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
       >
         <div
-          className="
-            w-6
-            h-10
-            rounded-full
-            border-2
-            flex
-            items-start
-            justify-center
-            p-2
-          "
+          className="w-6 h-10 rounded-full border-2 flex items-start justify-center p-2"
           style={{
             borderColor: colors.secondary,
           }}
         >
           <div
-            className="
-              w-1
-              h-2
-              rounded-full
-            "
+            className="w-1 h-2 rounded-full"
             style={{
-              backgroundColor:
-                colors.secondary,
+              backgroundColor: colors.secondary,
             }}
           />
         </div>
